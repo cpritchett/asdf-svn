@@ -63,9 +63,11 @@ This plugin provides additional SVN-specific commands that extend asdf's functio
 ```shell
 # Show SVN repository information for the current directory or specified path
 asdf svn repo-info [path]
+# [path] is optional. If not provided, the command defaults to the current directory.
 
 # Clean up an SVN working copy that may be in an inconsistent state
 asdf svn clean [path]
+# [path] is optional. If not provided, the command defaults to the current directory.
 ```
 
 For standard version management, use the built-in asdf commands:
