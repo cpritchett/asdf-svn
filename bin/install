@@ -142,7 +142,7 @@ install_from_source() {
             --with-ssl \
             --with-sqlite3 \
             --without-berkeley-db \
-            $utf8proc_option \
+            --with-utf8proc=internal \
             "${configure_options}"
 
         echo "Building Subversion ${version} with ${concurrency} parallel jobs..."
