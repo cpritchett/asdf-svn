@@ -21,12 +21,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential autoconf automake libtool pkg-config \
             libssl-dev libsqlite3-dev libapr1-dev libaprutil1-dev
-      
+
       - name: Install dependencies on macOS
         if: matrix.os == 'macos-latest'
         run: |
           brew install apr apr-util openssl sqlite3
-      
+
       - name: asdf_plugin_test
         uses: asdf-vm/actions/plugin-test@v2
         with:

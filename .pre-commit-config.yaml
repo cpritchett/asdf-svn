@@ -18,7 +18,7 @@ repos:
         entry: ./scripts/lint.bash
         language: script
         pass_filenames: false
-        
+
     -   id: shfmt
         name: Format shell scripts with shfmt
         description: Run shfmt on all shell scripts

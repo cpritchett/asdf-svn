@@ -9,9 +9,9 @@ export LC_ALL=C
 
 # Set path to find libraries if needed
 if [ -d "$ASDF_INSTALL_PATH/lib" ]; then
-	export LD_LIBRARY_PATH="$ASDF_INSTALL_PATH/lib:$LD_LIBRARY_PATH"
-	# For macOS
-	export DYLD_LIBRARY_PATH="$ASDF_INSTALL_PATH/lib:$DYLD_LIBRARY_PATH"
+    export LD_LIBRARY_PATH="$ASDF_INSTALL_PATH/lib:$LD_LIBRARY_PATH"
+    # For macOS
+    export DYLD_LIBRARY_PATH="$ASDF_INSTALL_PATH/lib:$DYLD_LIBRARY_PATH"
 fi
 
 # Path to SVN config directory (default is ~/.subversion)

@@ -8,67 +8,138 @@ plugin_dir=$(dirname "$(dirname "$current_script_path")")
 # shellcheck source=./lib/utils.bash
 source "${plugin_dir}/lib/utils.bash"
 
-# Check dependencies required for building
+# Helper: Find a config script in PATH or Homebrew
+find_config_script() {
+    local script_name="$1"
+    # Check in PATH
+    if command -v "$script_name" &>/dev/null; then
+        command -v "$script_name"
+        return 0
+    fi
+    # Check Homebrew opt locations (macOS)
+    if [ "$(uname)" = "Darwin" ] && command -v brew &>/dev/null; then
+        local brew_prefix
+        brew_prefix="$(brew --prefix)"
+        if [ -x "$brew_prefix/opt/apr/bin/$script_name" ]; then
+            echo "$brew_prefix/opt/apr/bin/$script_name"
+            return 0
+        fi
+        if [ -x "$brew_prefix/opt/apr-util/bin/$script_name" ]; then
+            echo "$brew_prefix/opt/apr-util/bin/$script_name"
+            return 0
+        fi
+    fi
+    return 1
+}
+
+# Dependency check
 check_build_dependencies() {
-	local deps=("apr" "apr-util" "autoconf" "automake" "libtool" "pkg-config" "gcc" "make" "openssl" "sqlite3")
-	local missing_deps=()
+    local missing=false
+    for cmd in autoconf automake libtool gcc make pkg-config; do
+        if ! command -v "$cmd" &>/dev/null; then
+            echo "Missing build tool: $cmd"
+            missing=true
+        fi
+    done
 
-	for dep in "${deps[@]}"; do
-		if ! command -v "$dep" &>/dev/null && ! command -v "${dep}-config" &>/dev/null; then
-			missing_deps+=("$dep")
-		fi
-	done
+    if ! find_config_script "apr-1-config" &>/dev/null; then
+        echo "Missing dependency: apr (Apache Portable Runtime)"
+        echo "  For macOS: brew install apr"
+        echo "  For Ubuntu/Debian: apt-get install libapr1-dev"
+        missing=true
+    fi
 
-	if [[ ${#missing_deps[@]} -gt 0 ]]; then
-		echo "Missing build dependencies: ${missing_deps[*]}"
-		echo "Please install them using your system's package manager before proceeding."
-		echo "See 'asdf help svn deps' for more information."
-		exit 1
-	fi
+    if ! find_config_script "apu-1-config" &>/dev/null; then
+        echo "Missing dependency: apr-util (Apache Portable Runtime Utilities)"
+        echo "  For macOS: brew install apr-util"
+        echo "  For Ubuntu/Debian: apt-get install libaprutil1-dev"
+        missing=true
+    fi
+
+    if ! pkg-config --exists openssl || ! command -v openssl &>/dev/null; then
+        echo "Missing dependency: openssl"
+        echo "  For macOS: brew install openssl"
+        echo "  For Ubuntu/Debian: apt-get install libssl-dev"
+        missing=true
+    fi
+
+    if ! pkg-config --exists sqlite3 || ! command -v sqlite3 &>/dev/null; then
+        echo "Missing dependency: sqlite3"
+        echo "  For macOS: brew install sqlite"
+        echo "  For Ubuntu/Debian: apt-get install libsqlite3-dev"
+        missing=true
+    fi
+
+    if [ "$missing" = true ]; then
+        echo "Please install missing dependencies and try again"
+        echo "See 'asdf help svn deps' for more information"
+        exit 1
+    fi
+}
+
+# Find apr-1-config
+find_apr_config() {
+    find_config_script "apr-1-config" || {
+        echo "Failed to find apr-1-config"
+        exit 1
+    }
+}
+
+# Find apu-1-config
+find_apu_config() {
+    find_config_script "apu-1-config" || {
+        echo "Failed to find apu-1-config"
+        exit 1
+    }
 }
 
 # Build and install from source
 install_from_source() {
-	local version="$1"
-	local install_path="$2"
-	local source_path="$ASDF_DOWNLOAD_PATH"
-	local prefix="${install_path%/bin}"
+    local version="$1"
+    local install_path="$2"
+    local source_path="$ASDF_DOWNLOAD_PATH"
+    local prefix="${install_path%/bin}"
 
-	# Allow customizing configure options via environment variable
-	local configure_options="${ASDF_SVN_CONFIGURE_OPTIONS:-}"
+    local configure_options="${ASDF_SVN_CONFIGURE_OPTIONS:-}"
+    local concurrency="${ASDF_SVN_CONCURRENCY:-$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 2)}"
 
-	# Use environment variable for concurrency or detect automatically
-	local concurrency="${ASDF_SVN_CONCURRENCY:-$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 2)}"
+    local apr_config
+    apr_config="$(find_apr_config)"
+    local apu_config
+    apu_config="$(find_apu_config)"
 
-	(
-		cd "$source_path"
+    (
+        cd "$source_path"
 
-		echo "Configuring Subversion ${version}..."
-		./configure --prefix="$prefix" \
-			--with-apr="$(command -v apr-1-config || command -v apr-config)" \
-			--with-apr-util="$(command -v apu-1-config || command -v apu-config)" \
-			--with-ssl \
-			--with-sqlite3 \
-			--without-berkeley-db \
-			"${configure_options}"
+        echo "Configuring Subversion ${version}..."
+        echo "Using APR config: $apr_config"
+        echo "Using APR-UTIL config: $apu_config"
 
-		echo "Building Subversion ${version} with ${concurrency} parallel jobs..."
-		make -j"${concurrency}"
+        ./configure --prefix="$prefix" \
+            --with-apr="$apr_config" \
+            --with-apr-util="$apu_config" \
+            --with-ssl \
+            --with-sqlite3 \
+            --without-berkeley-db \
+            "${configure_options}"
 
-		echo "Installing Subversion ${version} to ${prefix}..."
-		make install
+        echo "Building Subversion ${version} with ${concurrency} parallel jobs..."
+        make -j"${concurrency}"
 
-		# Verify installation
-		if [ -x "${prefix}/bin/svn" ]; then
-			echo "Subversion ${version} installation successful!"
-		else
-			echo "Subversion installation failed. The svn binary was not created."
-			exit 1
-		fi
-	) || (
-		echo "Subversion installation failed. See error messages above."
-		exit 1
-	)
+        echo "Installing Subversion ${version} to ${prefix}..."
+        make install
+
+        # Verify installation
+        if [ -x "${prefix}/bin/svn" ]; then
+            echo "Subversion ${version} installation successful!"
+        else
+            echo "Subversion installation failed. The svn binary was not created."
+            exit 1
+        fi
+    ) || (
+        echo "Subversion installation failed. See error messages above."
+        exit 1
+    )
 }
 
 # Main
