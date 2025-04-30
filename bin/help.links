@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -eu
+[ "${BASH_VERSINFO[0]}" -ge 3 ] && set -o pipefail
+
+cat <<'HELP'
+Useful Links for Subversion
+==========================
+
+Official Resources:
+- Main Website: https://subversion.apache.org/
+- Documentation: https://svnbook.red-bean.com/ ("Version Control with Subversion" book)
+- Downloads: https://subversion.apache.org/download/
+- Bug Tracker: https://issues.apache.org/jira/projects/SVN/
+- Mailing Lists: https://subversion.apache.org/mailing-lists.html
+
+Plugin Resources:
+- asdf-svn Plugin: https://github.com/cpritchett/asdf-svn
+- ASDF Version Manager: https://asdf-vm.com/
+HELP
+
+exit 0
