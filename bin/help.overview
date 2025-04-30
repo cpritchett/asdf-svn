@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+set -eu
+[ "${BASH_VERSINFO[0]}" -ge 3 ] && set -o pipefail
+
 cat <<'HELP'
 Apache Subversion (SVN) Plugin for asdf Version Manager
 ======================================================
@@ -15,3 +18,5 @@ Apache archives, ensuring you get the authentic, unmodified version.
 Note that building from source requires several dependencies as listed in
 bin/help.deps (run 'asdf help svn deps' to see them).
 HELP
+
+exit 0
