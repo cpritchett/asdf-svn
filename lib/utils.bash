@@ -40,6 +40,7 @@ list_all_versions() {
         grep -o 'subversion-[0-9]\+\.[0-9]\+\.[0-9]\+\.tar\.bz2' |
         sed 's/subversion-//g' |
         sed 's/\.tar\.bz2//g' |
+        sort -u |  # Sort and deduplicate versions
         sort_versions
 }
 
