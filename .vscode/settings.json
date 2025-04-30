@@ -1,5 +1,4 @@
 {
-    "shellcheck.executablePath": "/Users/cpritchett/.local/share/mise/shims/shellcheck",
     "cSpell.words": [
         "shellcheck"
     ]
