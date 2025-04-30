@@ -108,6 +108,27 @@ install_from_source() {
     local apu_config
     apu_config="$(find_apu_config)"
 
+    # Check for utf8proc or fallback to internal version
+    local utf8proc_option=""
+    if pkg-config --exists utf8proc 2>/dev/null; then
+        echo "Found utf8proc via pkg-config"
+    elif [ -d "$(brew --prefix 2>/dev/null)/opt/utf8proc" ] 2>/dev/null; then
+        echo "Found utf8proc in Homebrew, but pkg-config isn't detecting it"
+        # Set PKG_CONFIG_PATH to help find utf8proc
+        if [ -d "$(brew --prefix)/opt/utf8proc/lib/pkgconfig" ]; then
+            export PKG_CONFIG_PATH="$(brew --prefix)/opt/utf8proc/lib/pkgconfig:${PKG_CONFIG_PATH:-}"
+            echo "Added utf8proc to PKG_CONFIG_PATH"
+        else
+            # Fallback to internal utf8proc if pkg-config file isn't found
+            utf8proc_option="--with-utf8proc=internal"
+            echo "Using internal utf8proc library"
+        fi
+    else
+        # Use internal utf8proc implementation
+        utf8proc_option="--with-utf8proc=internal"
+        echo "Using internal utf8proc library"
+    fi
+
     (
         cd "$source_path"
 
@@ -121,6 +142,7 @@ install_from_source() {
             --with-ssl \
             --with-sqlite3 \
             --without-berkeley-db \
+            $utf8proc_option \
             "${configure_options}"
 
         echo "Building Subversion ${version} with ${concurrency} parallel jobs..."
