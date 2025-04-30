@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 
+# Run shellcheck on all shell scripts
 shellcheck --shell=bash --external-sources \
 	bin/* --source-path=template/lib/ \
-	lib/* \
+	lib/utils.bash \
+	lib/commands/*.bash \
 	scripts/*
 
+# Run shfmt for formatting check
 shfmt --language-dialect bash --diff \
-	./**/*
+	bin/* lib/utils.bash lib/commands/*.bash scripts/*

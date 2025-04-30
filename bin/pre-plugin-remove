@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# This is executed before the plugin is removed
+
+echo "Preparing to remove the asdf-svn plugin..."
+echo "Note: This will not remove any installed svn versions."
+echo "To remove installed versions use: asdf uninstall svn <version>"

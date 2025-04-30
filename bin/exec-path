@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# Output the path to the executable to use
+echo "$ASDF_INSTALL_PATH/bin"

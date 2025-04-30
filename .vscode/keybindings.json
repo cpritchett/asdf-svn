@@ -1,0 +1,50 @@
+[
+  {
+    "key": "ctrl+shift+l",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Lint Shell Scripts",
+    "when": "!isMac && editorLangId == 'shellscript'"
+  },
+  {
+    "key": "cmd+shift+l",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Lint Shell Scripts",
+    "when": "isMac && editorLangId == 'shellscript'"
+  },
+  {
+    "key": "ctrl+shift+f",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Format Shell Scripts",
+    "when": "!isMac && editorLangId == 'shellscript'"
+  },
+  {
+    "key": "cmd+shift+f",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Format Shell Scripts",
+    "when": "isMac && editorLangId == 'shellscript'"
+  },
+  {
+    "key": "ctrl+shift+h",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Run All Pre-commit Hooks",
+    "when": "!isMac"
+  },
+  {
+    "key": "cmd+shift+h",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Run All Pre-commit Hooks",
+    "when": "isMac"
+  },
+  {
+    "key": "ctrl+shift+t",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Test Plugin Locally",
+    "when": "!isMac"
+  },
+  {
+    "key": "cmd+shift+t",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Test Plugin Locally",
+    "when": "isMac"
+  }
+]

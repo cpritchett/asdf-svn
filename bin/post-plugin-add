@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# This is executed after the plugin is added to asdf
+
+echo "Thank you for installing the asdf-svn plugin!"
+echo "Please make sure you have the required dependencies installed."
+echo ""
+echo "Run 'asdf help svn deps' to see the list of dependencies."

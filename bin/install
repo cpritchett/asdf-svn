@@ -8,4 +8,70 @@ plugin_dir=$(dirname "$(dirname "$current_script_path")")
 # shellcheck source=./lib/utils.bash
 source "${plugin_dir}/lib/utils.bash"
 
-install_version "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"
+# Check dependencies required for building
+check_build_dependencies() {
+	local deps=("apr" "apr-util" "autoconf" "automake" "libtool" "pkg-config" "gcc" "make" "openssl" "sqlite3")
+	local missing_deps=()
+
+	for dep in "${deps[@]}"; do
+		if ! command -v "$dep" &>/dev/null && ! command -v "${dep}-config" &>/dev/null; then
+			missing_deps+=("$dep")
+		fi
+	done
+
+	if [[ ${#missing_deps[@]} -gt 0 ]]; then
+		echo "Missing build dependencies: ${missing_deps[*]}"
+		echo "Please install them using your system's package manager before proceeding."
+		echo "See 'asdf help svn deps' for more information."
+		exit 1
+	fi
+}
+
+# Build and install from source
+install_from_source() {
+	local version="$1"
+	local install_path="$2"
+	local source_path="$ASDF_DOWNLOAD_PATH"
+	local prefix="${install_path%/bin}"
+
+	# Allow customizing configure options via environment variable
+	local configure_options="${ASDF_SVN_CONFIGURE_OPTIONS:-}"
+
+	# Use environment variable for concurrency or detect automatically
+	local concurrency="${ASDF_SVN_CONCURRENCY:-$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 2)}"
+
+	(
+		cd "$source_path"
+
+		echo "Configuring Subversion ${version}..."
+		./configure --prefix="$prefix" \
+			--with-apr="$(command -v apr-1-config || command -v apr-config)" \
+			--with-apr-util="$(command -v apu-1-config || command -v apu-config)" \
+			--with-ssl \
+			--with-sqlite3 \
+			--without-berkeley-db \
+			"${configure_options}"
+
+		echo "Building Subversion ${version} with ${concurrency} parallel jobs..."
+		make -j"${concurrency}"
+
+		echo "Installing Subversion ${version} to ${prefix}..."
+		make install
+
+		# Verify installation
+		if [ -x "${prefix}/bin/svn" ]; then
+			echo "Subversion ${version} installation successful!"
+		else
+			echo "Subversion installation failed. The svn binary was not created."
+			exit 1
+		fi
+	) || (
+		echo "Subversion installation failed. See error messages above."
+		exit 1
+	)
+}
+
+# Main
+echo "Installing Subversion version ${ASDF_INSTALL_VERSION}..."
+check_build_dependencies
+install_from_source "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"

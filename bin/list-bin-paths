@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# This defines the location of the binaries installed by the plugin
+# that should be added to path
+
+echo "bin"

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+cat <<'HELP'
+Apache Subversion (SVN) Plugin for asdf Version Manager
+======================================================
+
+This plugin allows you to install and manage different versions of Subversion
+using the asdf version manager. Subversion is an open-source, centralized
+version control system characterized by its reliability as a safe haven for
+valuable data.
+
+The plugin builds Subversion from source code, directly from the official
+Apache archives, ensuring you get the authentic, unmodified version.
+
+Note that building from source requires several dependencies as listed in
+bin/help.deps (run 'asdf help svn deps' to see them).
+HELP

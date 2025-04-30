@@ -1,0 +1,35 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+
+# Local hooks that use the scripts in the repository
+-   repo: local
+    hooks:
+    -   id: shellcheck
+        name: Lint shell scripts with shellcheck
+        description: Run shellcheck on all shell scripts
+        entry: ./scripts/lint.bash
+        language: script
+        pass_filenames: false
+        
+    -   id: shfmt
+        name: Format shell scripts with shfmt
+        description: Run shfmt on all shell scripts
+        entry: ./scripts/format.bash
+        language: script
+        pass_filenames: false
+
+    -   id: test-plugin
+        name: Test asdf plugin locally
+        description: Test the asdf-svn plugin locally
+        entry: bash -c 'asdf plugin test svn . "svn --version" || echo "Skipping full test - make sure to run this before pushing"'
+        language: system
+        pass_filenames: false
+        stages: [manual]

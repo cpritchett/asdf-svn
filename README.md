@@ -10,15 +10,22 @@
 
 - [Dependencies](#dependencies)
 - [Install](#install)
+- [Extension Commands](#extension-commands)
 - [Contributing](#contributing)
 - [License](#license)
 
 # Dependencies
 
-**TODO: adapt this section**
+- `bash`, `curl`, `tar`, and [POSIX utilities](https://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html)
+- Build dependencies:
+  - `apr` and `apr-util` - Apache Portable Runtime libraries
+  - `autoconf`, `automake`, `libtool` - GNU build tools
+  - `pkg-config` - Compiler/linker package configuration tool
+  - `gcc`, `make` - Compiler and build system
+  - `openssl` - For SSL/TLS support
+  - `sqlite3` - For repository support
 
-- `bash`, `curl`, `tar`, and [POSIX utilities](https://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html).
-- `SOME_ENV_VAR`: set this environment variable in your shell config to load the correct version of tool x.
+These dependencies should be installed using your system's package manager (e.g., Homebrew on macOS, apt on Debian/Ubuntu, etc.).
 
 # Install
 
@@ -48,6 +55,24 @@ svn --version
 
 Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to
 install & manage versions.
+
+# Extension Commands
+
+This plugin provides additional SVN-specific commands that extend asdf's functionality:
+
+```shell
+# Show SVN repository information for the current directory or specified path
+asdf svn repo-info [path]
+
+# Clean up an SVN working copy that may be in an inconsistent state
+asdf svn clean [path]
+```
+
+For standard version management, use the built-in asdf commands:
+- `asdf list-all svn` - List all available SVN versions
+- `asdf list svn` - List installed SVN versions
+- `asdf current svn` - Show current SVN version
+- `asdf where svn` - Show installation path
 
 # Contributing
 

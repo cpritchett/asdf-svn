@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# This is executed after the plugin is updated
+
+echo "The asdf-svn plugin has been updated."
+echo "Please check for any new dependencies or configuration options:"
+echo "- Run 'asdf help svn deps' for dependencies"
+echo "- Run 'asdf help svn config' for configuration options"

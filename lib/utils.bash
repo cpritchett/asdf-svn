@@ -2,9 +2,10 @@
 
 set -euo pipefail
 
-# TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for svn.
-GH_REPO="https://github.com/apache/subversion"
+# Apache Subversion official website and repository
+GH_REPO="https://subversion.apache.org/"
 TOOL_NAME="svn"
+# shellcheck disable=SC2034 # This variable may be used by scripts that source this file
 TOOL_TEST="svn --version"
 
 fail() {
@@ -27,13 +28,19 @@ sort_versions() {
 list_github_tags() {
 	git ls-remote --tags --refs "$GH_REPO" |
 		grep -o 'refs/tags/.*' | cut -d/ -f3- |
-		sed 's/^v//' # NOTE: You might want to adapt this sed to remove non-version strings from tags
+		grep '^[0-9]' | # Filter for version tags that start with numbers
+		sed 's/^v//'    # NOTE: You might want to adapt this sed to remove non-version strings from tags
 }
 
 list_all_versions() {
-	# TODO: Adapt this. By default we simply list the tag names from GitHub releases.
-	# Change this function if svn has other means of determining installable versions.
-	list_github_tags
+	# Instead of using GitHub tags, fetch versions from Apache archive
+	# Similar to how Homebrew lists available versions
+	local versions_url="https://archive.apache.org/dist/subversion/"
+	curl -s "$versions_url" |
+		grep -o 'subversion-[0-9]\+\.[0-9]\+\.[0-9]\+\.tar\.bz2' |
+		sed 's/subversion-//g' |
+		sed 's/\.tar\.bz2//g' |
+		sort_versions
 }
 
 download_release() {
@@ -41,8 +48,8 @@ download_release() {
 	version="$1"
 	filename="$2"
 
-	# TODO: Adapt the release URL convention for svn
-	url="$GH_REPO/archive/v${version}.tar.gz"
+	# Apache SVN uses .tar.bz2 format on their archive site
+	url="https://archive.apache.org/dist/subversion/subversion-${version}.tar.bz2"
 
 	echo "* Downloading $TOOL_NAME release $version..."
 	curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
@@ -51,24 +58,14 @@ download_release() {
 install_version() {
 	local install_type="$1"
 	local version="$2"
-	local install_path="${3%/bin}/bin"
+	local install_path="$3"
 
 	if [ "$install_type" != "version" ]; then
 		fail "asdf-$TOOL_NAME supports release installs only"
 	fi
 
-	(
-		mkdir -p "$install_path"
-		cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
+	# The actual installation is handled in the bin/install script
+	# This function is preserved for compatibility with asdf
+	echo "Installing $TOOL_NAME $version to $install_path"
 
-		# TODO: Assert svn executable exists.
-		local tool_cmd
-		tool_cmd="$(echo "$TOOL_TEST" | cut -d' ' -f1)"
-		test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
-
-		echo "$TOOL_NAME $version installation was successful!"
-	) || (
-		rm -rf "$install_path"
-		fail "An error occurred while installing $TOOL_NAME $version."
-	)
 }

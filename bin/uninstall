@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Remove installed svn version from the specified path
+rm -rf "$ASDF_INSTALL_PATH"
+echo "Subversion $ASDF_INSTALL_VERSION has been removed from $ASDF_INSTALL_PATH"
