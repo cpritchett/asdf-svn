@@ -29,7 +29,7 @@ repos:
     -   id: test-plugin
         name: Test asdf plugin locally
         description: Test the asdf-svn plugin locally
-        entry: bash -c 'asdf plugin test svn . "svn --version" || echo "Skipping full test - make sure to run this before pushing"'
+        entry: bash -c 'asdf plugin test svn . "svn --version" --verbose'
         language: system
         pass_filenames: false
         always_run: true
