@@ -29,7 +29,7 @@ repos:
     -   id: test-plugin
         name: Test asdf plugin locally
         description: Test the asdf-svn plugin locally
-        entry: bash -c 'asdf plugin test svn . "svn --version" --verbose'
+        entry: bash -c 'export PKG_CONFIG_PATH="$(brew --prefix 2>/dev/null)/opt/apr/lib/pkgconfig:$(brew --prefix 2>/dev/null)/opt/apr-util/lib/pkgconfig:$(brew --prefix 2>/dev/null)/opt/openssl/lib/pkgconfig:$(brew --prefix 2>/dev/null)/opt/sqlite/lib/pkgconfig:$PKG_CONFIG_PATH" && asdf plugin test svn . "svn --version" --verbose'
         language: system
         pass_filenames: false
         always_run: true

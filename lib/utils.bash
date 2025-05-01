@@ -49,11 +49,27 @@ download_release() {
     version="$1"
     filename="$2"
 
-    # Apache SVN uses .tar.bz2 format on their archive site
+    # First try the Apache SVN archive URL format (.tar.bz2)
     url="https://archive.apache.org/dist/subversion/subversion-${version}.tar.bz2"
 
     echo "* Downloading $TOOL_NAME release $version..."
-    curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
+    if ! curl "${curl_opts[@]}" -o "$filename" -C - "$url"; then
+        echo "* Failed to download from Apache archive, trying GitHub format..."
+        
+        # Handle the GitHub archive URL format that asdf-plugin-test might be trying to use
+        # This is where the test script is trying to download from
+        local github_url="https://github.com/apache/subversion/archive/v${version}.tar.gz"
+        
+        if ! curl "${curl_opts[@]}" -o "$filename" -C - "$github_url"; then
+            # If both URLs fail, try without the 'v' prefix which might be more common
+            github_url="https://github.com/apache/subversion/archive/${version}.tar.gz"
+            curl "${curl_opts[@]}" -o "$filename" -C - "$github_url" || {
+                # If all attempts fail, try downloading from the official Apache mirror directly
+                local apache_url="https://downloads.apache.org/subversion/subversion-${version}.tar.bz2"
+                curl "${curl_opts[@]}" -o "$filename" -C - "$apache_url" || fail "Could not download $url or any alternative URLs"
+            }
+        fi
+    fi
 }
 
 install_version() {
