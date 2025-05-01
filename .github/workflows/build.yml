@@ -45,51 +45,47 @@ jobs:
           # Create bin directory in a location that will persist
           mkdir -p $HOME/bin
           
-          # Create a wrapper for apr-1-config if it doesn't exist
+          # Create wrappers using echo statements instead of heredocs to avoid YAML parsing issues
           if ! which apr-1-config &>/dev/null; then
             echo "Creating apr-1-config wrapper"
-            cat > $HOME/bin/apr-1-config << 'EOF'
-#!/bin/bash
-if [[ "$1" == "--includes" ]]; then
-    echo "-I/usr/include/apr-1.0"
-elif [[ "$1" == "--cflags" ]]; then
-    echo "-g -O2 -pthread"
-elif [[ "$1" == "--cppflags" ]]; then
-    echo "-I/usr/include/apr-1.0"
-elif [[ "$1" == "--libs" ]]; then
-    echo "-lapr-1"
-elif [[ "$1" == "--link-ld" ]]; then
-    echo "-L/usr/lib -lapr-1"
-elif [[ "$1" == "--version" ]]; then
-    echo "APR version 1.7.0"
-else
-    echo "Generated apr-1-config wrapper"
-fi
-EOF
+            echo '#!/bin/bash' > $HOME/bin/apr-1-config
+            echo 'if [[ "$1" == "--includes" ]]; then' >> $HOME/bin/apr-1-config
+            echo '    echo "-I/usr/include/apr-1.0"' >> $HOME/bin/apr-1-config
+            echo 'elif [[ "$1" == "--cflags" ]]; then' >> $HOME/bin/apr-1-config
+            echo '    echo "-g -O2 -pthread"' >> $HOME/bin/apr-1-config
+            echo 'elif [[ "$1" == "--cppflags" ]]; then' >> $HOME/bin/apr-1-config
+            echo '    echo "-I/usr/include/apr-1.0"' >> $HOME/bin/apr-1-config
+            echo 'elif [[ "$1" == "--libs" ]]; then' >> $HOME/bin/apr-1-config
+            echo '    echo "-lapr-1"' >> $HOME/bin/apr-1-config
+            echo 'elif [[ "$1" == "--link-ld" ]]; then' >> $HOME/bin/apr-1-config
+            echo '    echo "-L/usr/lib -lapr-1"' >> $HOME/bin/apr-1-config
+            echo 'elif [[ "$1" == "--version" ]]; then' >> $HOME/bin/apr-1-config
+            echo '    echo "APR version 1.7.0"' >> $HOME/bin/apr-1-config
+            echo 'else' >> $HOME/bin/apr-1-config
+            echo '    echo "Generated apr-1-config wrapper"' >> $HOME/bin/apr-1-config
+            echo 'fi' >> $HOME/bin/apr-1-config
             chmod +x $HOME/bin/apr-1-config
           fi
           
-          # Create a wrapper for apu-1-config if it doesn't exist
+          # Create apu-1-config wrapper with the same approach
           if ! which apu-1-config &>/dev/null; then
             echo "Creating apu-1-config wrapper"
-            cat > $HOME/bin/apu-1-config << 'EOF'
-#!/bin/bash
-if [[ "$1" == "--includes" ]]; then
-    echo "-I/usr/include/apr-1.0"
-elif [[ "$1" == "--cflags" ]]; then
-    echo "-g -O2"
-elif [[ "$1" == "--cppflags" ]]; then
-    echo "-I/usr/include/apr-1.0"
-elif [[ "$1" == "--libs" ]]; then
-    echo "-laprutil-1 -lldap -llber -lexpat"
-elif [[ "$1" == "--link-ld" ]]; then
-    echo "-L/usr/lib -laprutil-1 -lldap -llber -lexpat"
-elif [[ "$1" == "--version" ]]; then
-    echo "APR Util version 1.6.1"
-else
-    echo "Generated apu-1-config wrapper"
-fi
-EOF
+            echo '#!/bin/bash' > $HOME/bin/apu-1-config
+            echo 'if [[ "$1" == "--includes" ]]; then' >> $HOME/bin/apu-1-config
+            echo '    echo "-I/usr/include/apr-1.0"' >> $HOME/bin/apu-1-config
+            echo 'elif [[ "$1" == "--cflags" ]]; then' >> $HOME/bin/apu-1-config
+            echo '    echo "-g -O2"' >> $HOME/bin/apu-1-config
+            echo 'elif [[ "$1" == "--cppflags" ]]; then' >> $HOME/bin/apu-1-config
+            echo '    echo "-I/usr/include/apr-1.0"' >> $HOME/bin/apu-1-config
+            echo 'elif [[ "$1" == "--libs" ]]; then' >> $HOME/bin/apu-1-config
+            echo '    echo "-laprutil-1 -lldap -llber -lexpat"' >> $HOME/bin/apu-1-config
+            echo 'elif [[ "$1" == "--link-ld" ]]; then' >> $HOME/bin/apu-1-config
+            echo '    echo "-L/usr/lib -laprutil-1 -lldap -llber -lexpat"' >> $HOME/bin/apu-1-config
+            echo 'elif [[ "$1" == "--version" ]]; then' >> $HOME/bin/apu-1-config
+            echo '    echo "APR Util version 1.6.1"' >> $HOME/bin/apu-1-config
+            echo 'else' >> $HOME/bin/apu-1-config
+            echo '    echo "Generated apu-1-config wrapper"' >> $HOME/bin/apu-1-config
+            echo 'fi' >> $HOME/bin/apu-1-config
             chmod +x $HOME/bin/apu-1-config
           fi
           
