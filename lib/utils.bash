@@ -42,8 +42,14 @@ list_all_versions() {
             sort -u | \
             sort_versions
     else
-        # Fallback to a curated list of stable versions
-        printf "%s\n" "1.10.8" "1.11.1" "1.12.2" "1.13.0" "1.14.5" | sort_versions
+        # Fallback to a curated list of stable versions (one per line)
+        cat <<EOF
+1.10.8
+1.11.1
+1.12.2
+1.13.0
+1.14.5
+EOF
     fi
 }
 
