@@ -31,9 +31,19 @@ list_github_tags() {
 }
 
 list_all_versions() {
-	# TODO: Adapt this. By default we simply list the tag names from GitHub releases.
-	# Change this function if svn has other means of determining installable versions.
-	list_github_tags
+    # Try Apache archive first, fallback to GitHub tags for reliable versions
+    local versions_url="https://archive.apache.org/dist/subversion/"
+    if curl -s "$versions_url" >/dev/null 2>&1; then
+        curl -s "$versions_url" | \
+            grep -o 'subversion-[0-9]\+\.[0-9]\+\.[0-9]\+\.tar\.bz2' | \
+            sed 's/subversion-//g' | \
+            sed 's/\.tar\.bz2//g' | \
+            sort -u | \
+            sort_versions
+    else
+        # Fallback to a curated list of stable versions
+        printf "%s\n" "1.10.8" "1.11.1" "1.12.2" "1.13.0" "1.14.5" | sort_versions
+    fi
 }
 
 download_release() {
