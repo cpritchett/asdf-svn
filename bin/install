@@ -8,4 +8,34 @@ plugin_dir=$(dirname "$(dirname "$current_script_path")")
 # shellcheck source=./lib/utils.bash
 source "${plugin_dir}/lib/utils.bash"
 
+# Run dependency check
+"${plugin_dir}/scripts/check-deps.bash"
+
+echo "Installing Subversion ${ASDF_INSTALL_VERSION}..."
+
+# Simple installation approach:
+# 1. For most users, suggest using system package manager instead of building from source
+# 2. If they really want to build from source, delegate to the original simple approach
+# 3. Keep the complexity minimal
+
+if [ "${ASDF_SVN_BUILD_FROM_SOURCE:-}" != "true" ]; then
+    echo ""
+    echo "⚠️  Building SVN from source is complex and requires many dependencies."
+    echo "Consider using your system package manager instead:"
+    echo ""
+    echo "  Ubuntu/Debian: sudo apt-get install subversion"
+    echo "  macOS: brew install subversion"
+    echo "  RHEL/CentOS: dnf install subversion"
+    echo ""
+    echo "If you really want to build from source, set:"
+    echo "  export ASDF_SVN_BUILD_FROM_SOURCE=true"
+    echo ""
+    echo "Then run the installation again."
+    exit 1
+fi
+
+echo "Building SVN from source (ASDF_SVN_BUILD_FROM_SOURCE=true)..."
+
+# Use the original simple approach from utils.bash
+# This keeps the install script minimal and delegates complex logic elsewhere
 install_version "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"
