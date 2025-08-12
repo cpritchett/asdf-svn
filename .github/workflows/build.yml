@@ -31,7 +31,7 @@ jobs:
           fi
 
       - name: Install asdf
-        uses: asdf-vm/actions/setup@v3
+        uses: asdf-vm/actions/setup@v4
         
       - name: Test plugin installation and functionality
         env:
