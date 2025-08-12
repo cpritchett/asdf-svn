@@ -32,8 +32,28 @@ list_github_tags() {
 }
 
 list_all_versions() {
-    # Provide a curated list of stable SVN versions
-    # This is more reliable than scraping and gives users real choices
+    # Try to get versions from Apache archive, with curated fallback
+    # TODO: This curated list needs manual updates when new SVN versions are released
+    local versions_url="https://archive.apache.org/dist/subversion/"
+    
+    # Attempt to scrape Apache archive
+    if command -v curl >/dev/null 2>&1; then
+        local scraped_versions
+        scraped_versions=$(curl -s --max-time 10 "$versions_url" 2>/dev/null | \
+            grep -o 'subversion-[0-9]\+\.[0-9]\+\.[0-9]\+\.tar\.bz2' | \
+            sed 's/subversion-//g' | \
+            sed 's/\.tar\.bz2//g' | \
+            sort -V | \
+            uniq)
+        
+        # If we got results, use them
+        if [ -n "$scraped_versions" ] && [ "$(echo "$scraped_versions" | wc -l)" -gt 1 ]; then
+            echo "$scraped_versions"
+            return 0
+        fi
+    fi
+    
+    # Fallback to curated list (UPDATE WHEN NEW VERSIONS ARE RELEASED)
     cat <<EOF
 1.10.8
 1.11.1
