@@ -93,6 +93,60 @@ install_version() {
     build_and_install_svn "$version" "$install_path"
 }
 
+# Find APR config script in various locations
+find_apr_config() {
+    if command -v apr-1-config >/dev/null 2>&1; then
+        command -v apr-1-config
+        return 0
+    fi
+    
+    # On macOS with Homebrew, check common locations
+    if [ "$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then
+        local brew_prefix
+        brew_prefix="$(brew --prefix)"
+        for potential_path in \
+            "$brew_prefix/bin/apr-1-config" \
+            "$brew_prefix/opt/apr/bin/apr-1-config" \
+            "/usr/local/bin/apr-1-config" \
+            "/opt/homebrew/bin/apr-1-config"; do
+            if [ -x "$potential_path" ]; then
+                echo "$potential_path"
+                return 0
+            fi
+        done
+    fi
+    
+    # Fallback
+    echo "/usr/bin/apr-1-config"
+}
+
+# Find APR-util config script in various locations  
+find_apu_config() {
+    if command -v apu-1-config >/dev/null 2>&1; then
+        command -v apu-1-config
+        return 0
+    fi
+    
+    # On macOS with Homebrew, check common locations
+    if [ "$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then
+        local brew_prefix
+        brew_prefix="$(brew --prefix)"
+        for potential_path in \
+            "$brew_prefix/bin/apu-1-config" \
+            "$brew_prefix/opt/apr-util/bin/apu-1-config" \
+            "/usr/local/bin/apu-1-config" \
+            "/opt/homebrew/bin/apu-1-config"; do
+            if [ -x "$potential_path" ]; then
+                echo "$potential_path"
+                return 0
+            fi
+        done
+    fi
+    
+    # Fallback
+    echo "/usr/bin/apu-1-config"
+}
+
 build_and_install_svn() {
     local version="$1"
     local install_path="$2"
@@ -102,6 +156,14 @@ build_and_install_svn() {
     echo "Source: $source_path"
     echo "Target: $install_path"
     
+    # Find APR config scripts
+    local apr_config apu_config
+    apr_config="$(find_apr_config)"
+    apu_config="$(find_apu_config)"
+    
+    echo "Using APR config: $apr_config"
+    echo "Using APR-util config: $apu_config"
+    
     (
         cd "$source_path"
         
@@ -109,8 +171,8 @@ build_and_install_svn() {
         echo "Configuring..."
         ./configure \
             --prefix="$install_path" \
-            --with-apr="$(command -v apr-1-config || echo /usr/bin/apr-1-config)" \
-            --with-apr-util="$(command -v apu-1-config || echo /usr/bin/apu-1-config)" \
+            --with-apr="$apr_config" \
+            --with-apr-util="$apu_config" \
             --with-ssl \
             --with-sqlite3 \
             --without-berkeley-db \
