@@ -18,7 +18,7 @@ echo "Installing Subversion ${ASDF_INSTALL_VERSION}..."
 # 2. If they really want to build from source, delegate to the original simple approach
 # 3. Keep the complexity minimal
 
-if [ "${ASDF_SVN_BUILD_FROM_SOURCE:-}" != "true" ]; then
+if [ "${ASDF_SVN_BUILD_FROM_SOURCE:-}" != "true" ] && [ "${GITHUB_ACTIONS:-}" != "true" ]; then
     echo ""
     echo "⚠️  Building SVN from source is complex and requires many dependencies."
     echo "Consider using your system package manager instead:"
@@ -34,7 +34,11 @@ if [ "${ASDF_SVN_BUILD_FROM_SOURCE:-}" != "true" ]; then
     exit 1
 fi
 
-echo "Building SVN from source (ASDF_SVN_BUILD_FROM_SOURCE=true)..."
+if [ "${GITHUB_ACTIONS:-}" = "true" ]; then
+    echo "Building SVN from source (CI environment detected)..."
+else
+    echo "Building SVN from source (ASDF_SVN_BUILD_FROM_SOURCE=true)..."
+fi
 
 # Use the original simple approach from utils.bash
 # This keeps the install script minimal and delegates complex logic elsewhere
