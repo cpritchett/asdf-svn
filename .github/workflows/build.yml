@@ -51,22 +51,30 @@ jobs:
           # Add plugin from local directory
           asdf plugin add svn "${{ github.workspace }}"
           
-          # Test list-all command
+          # Test list-all command and show version selection logic
           echo "Testing asdf list-all svn..."
-          available_versions=$(asdf list-all svn | head -5)
-          echo "Available versions:"
-          echo "$available_versions"
+          echo "First 5 versions:"
+          asdf list-all svn | head -5
+          echo "Last 5 versions:"
+          asdf list-all svn | tail -5
+          echo "All versions:"
+          asdf list-all svn
           
-          # Get latest version for testing
-          latest_version=$(asdf list-all svn | tail -1)
-          echo "Latest version: $latest_version"
+          # Get a recent, stable version for testing (not ancient 1.0.0)
+          # Filter for versions 1.14+ which should be compatible with modern dependencies
+          recent_version=$(asdf list-all svn | grep -E '^1\.1[4-9]\.' | tail -1)
+          if [ -z "$recent_version" ]; then
+            # Fallback: get the latest version that's not 1.0.0
+            recent_version=$(asdf list-all svn | grep -v '^1\.0\.' | tail -1)
+          fi
+          echo "Testing with SVN version: $recent_version"
           
-          # Install the latest version
-          echo "Installing SVN version: $latest_version"
-          asdf install svn "$latest_version"
+          # Install the selected version
+          echo "Installing SVN version: $recent_version"
+          asdf install svn "$recent_version"
           
           # Set it as global
-          asdf global svn "$latest_version"
+          asdf global svn "$recent_version"
           
           # Test that SVN works
           echo "Testing svn --version:"
