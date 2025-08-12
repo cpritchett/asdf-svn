@@ -1,6 +1,6 @@
 <div align="center">
 
-# asdf-svn [![Build](https://github.com/cpritchett/asdf-svn/actions/workflows/build.yml/badge.svg)](https://github.com/cpritchett/asdf-svn/actions/workflows/build.yml) [![Lint](https://github.com/cpritchett/asdf-svn/actions/workflows/lint.yml/badge.svg)](https://github.com/cpritchett/asdf-svn/actions/workflows/lint.yml)
+# asdf-svn [![Build](https://github.com/cpritchett/asdf-svn/actions/workflows/build.yml/badge.svg)](https://github.com/cpritchett/asdf-svn/actions/workflows/build.yml)
 
 [svn](https://svnbook.red-bean.com/) plugin for the [asdf version manager](https://asdf-vm.com).
 
