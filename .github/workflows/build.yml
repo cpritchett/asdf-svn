@@ -53,20 +53,18 @@ jobs:
           
           # Test list-all command
           echo "Testing asdf list-all svn..."
-          available_versions=$(asdf list-all svn | head -5)
-          echo "Available versions:"
-          echo "$available_versions"
+          asdf list-all svn
           
-          # Get latest version for testing
-          latest_version=$(asdf list-all svn | tail -1)
-          echo "Latest version: $latest_version"
+          # Use latest available version for testing
+          test_version=$(asdf list-all svn | tail -1)
+          echo "Testing with SVN version: $test_version"
           
-          # Install the latest version
-          echo "Installing SVN version: $latest_version"
-          asdf install svn "$latest_version"
+          # Install and test the version
+          echo "Installing SVN version: $test_version"
+          asdf install svn "$test_version"
           
           # Set it as global
-          asdf global svn "$latest_version"
+          asdf global svn "$test_version"
           
           # Test that SVN works
           echo "Testing svn --version:"

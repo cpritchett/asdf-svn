@@ -56,6 +56,8 @@ svn --version
 
 **Note**: This plugin builds SVN from source by default, which requires many dependencies and can take significant time. For most users, we recommend using your system package manager instead (see Dependencies section above).
 
+**Version Updates**: This plugin maintains a curated list of stable SVN versions. If you need a newer version that's not listed, please open an issue or PR to update the version list.
+
 Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to install & manage versions.
 
 # Contributing
