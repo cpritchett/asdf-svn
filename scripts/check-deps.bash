@@ -17,11 +17,50 @@ for tool in autoconf automake libtool gcc make pkg-config; do
 done
 
 # Check for APR development libraries
-if ! command -v apr-1-config >/dev/null 2>&1; then
+apr_config_found=false
+apu_config_found=false
+
+# Check for apr-1-config in various locations
+if command -v apr-1-config >/dev/null 2>&1; then
+    apr_config_found=true
+elif [ "$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then
+    # On macOS with Homebrew, check common locations
+    brew_prefix="$(brew --prefix)"
+    for potential_path in \
+        "$brew_prefix/bin/apr-1-config" \
+        "$brew_prefix/opt/apr/bin/apr-1-config" \
+        "/usr/local/bin/apr-1-config" \
+        "/opt/homebrew/bin/apr-1-config"; do
+        if [ -x "$potential_path" ]; then
+            apr_config_found=true
+            break
+        fi
+    done
+fi
+
+if [ "$apr_config_found" = false ]; then
     missing+=("apr-dev")
 fi
 
-if ! command -v apu-1-config >/dev/null 2>&1; then
+# Check for apu-1-config in various locations
+if command -v apu-1-config >/dev/null 2>&1; then
+    apu_config_found=true
+elif [ "$(uname)" = "Darwin" ] && command -v brew >/dev/null 2>&1; then
+    # On macOS with Homebrew, check common locations
+    brew_prefix="$(brew --prefix)"
+    for potential_path in \
+        "$brew_prefix/bin/apu-1-config" \
+        "$brew_prefix/opt/apr-util/bin/apu-1-config" \
+        "/usr/local/bin/apu-1-config" \
+        "/opt/homebrew/bin/apu-1-config"; do
+        if [ -x "$potential_path" ]; then
+            apu_config_found=true
+            break
+        fi
+    done
+fi
+
+if [ "$apu_config_found" = false ]; then
     missing+=("apr-util-dev")
 fi
 
