@@ -16,6 +16,9 @@ jobs:
           - macos-latest
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
       - name: Install SVN build dependencies
         run: |
           if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
