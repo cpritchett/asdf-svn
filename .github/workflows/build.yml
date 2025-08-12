@@ -30,10 +30,33 @@ jobs:
             brew install autoconf automake libtool pkg-config openssl sqlite apr apr-util
           fi
 
-      - name: asdf_plugin_test
-        uses: asdf-vm/actions/plugin-test@v4
-        with:
-          command: svn --version
+      - name: Install asdf
+        uses: asdf-vm/actions/setup@v3
+        
+      - name: Test plugin installation and functionality
         env:
-          # Skip complex dependency checking in CI for now
           ASDF_SVN_SKIP_DEPS_CHECK: "true"
+        run: |
+          # Add plugin from local directory
+          asdf plugin add svn "${{ github.workspace }}"
+          
+          # Test list-all command
+          echo "Testing asdf list-all svn..."
+          available_versions=$(asdf list-all svn | head -5)
+          echo "Available versions:"
+          echo "$available_versions"
+          
+          # Get latest version for testing
+          latest_version=$(asdf list-all svn | tail -1)
+          echo "Latest version: $latest_version"
+          
+          # Install the latest version
+          echo "Installing SVN version: $latest_version"
+          asdf install svn "$latest_version"
+          
+          # Set it as global
+          asdf global svn "$latest_version"
+          
+          # Test that SVN works
+          echo "Testing svn --version:"
+          svn --version
