@@ -15,10 +15,17 @@
 
 # Dependencies
 
-**TODO: adapt this section**
+- `bash`, `curl`, `tar`, and [POSIX utilities](https://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html)
 
-- `bash`, `curl`, `tar`, and [POSIX utilities](https://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html).
-- `SOME_ENV_VAR`: set this environment variable in your shell config to load the correct version of tool x.
+**For most users**: We recommend installing SVN via your system package manager:
+- **Ubuntu/Debian**: `sudo apt-get install subversion`  
+- **macOS**: `brew install subversion`
+- **RHEL/CentOS**: `dnf install subversion`
+
+**For building from source** (advanced users), additional dependencies required:
+- Build tools: `autoconf`, `automake`, `libtool`, `gcc`, `make`, `pkg-config`
+- Libraries: `apr`, `apr-util`, `openssl`, `sqlite3`
+- Set `export ASDF_SVN_BUILD_FROM_SOURCE=true` before installation
 
 # Install
 
@@ -30,13 +37,14 @@ asdf plugin add svn
 asdf plugin add svn https://github.com/cpritchett/asdf-svn.git
 ```
 
-svn:
+SVN versions:
 
 ```shell
 # Show all installable versions
 asdf list-all svn
 
-# Install specific version
+# Install specific version (requires ASDF_SVN_BUILD_FROM_SOURCE=true)
+export ASDF_SVN_BUILD_FROM_SOURCE=true
 asdf install svn latest
 
 # Set a version globally (on your ~/.tool-versions file)
@@ -46,8 +54,9 @@ asdf global svn latest
 svn --version
 ```
 
-Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to
-install & manage versions.
+**Note**: This plugin builds SVN from source by default, which requires many dependencies and can take significant time. For most users, we recommend using your system package manager instead (see Dependencies section above).
+
+Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to install & manage versions.
 
 # Contributing
 
