@@ -32,25 +32,17 @@ list_github_tags() {
 }
 
 list_all_versions() {
-    # Try Apache archive first, fallback to GitHub tags for reliable versions
-    local versions_url="https://archive.apache.org/dist/subversion/"
-    if curl -s "$versions_url" >/dev/null 2>&1; then
-        curl -s "$versions_url" | \
-            grep -o 'subversion-[0-9]\+\.[0-9]\+\.[0-9]\+\.tar\.bz2' | \
-            sed 's/subversion-//g' | \
-            sed 's/\.tar\.bz2//g' | \
-            sort -u | \
-            sort_versions
-    else
-        # Fallback to a curated list of stable versions (one per line)
-        cat <<EOF
+    # Provide a curated list of stable SVN versions
+    # This is more reliable than scraping and gives users real choices
+    cat <<EOF
 1.10.8
 1.11.1
 1.12.2
 1.13.0
 1.14.5
+1.14.6
+1.14.7
 EOF
-    fi
 }
 
 download_release() {
